@@ -49,6 +49,9 @@ def print_message_m():
     Revenu = NoOfXrpToSnd * UpbitXrp - 10000000
     Kimch_P = UpbitXrp/BinanXrp_k*100-100
     now = time.localtime()
+    Hour = now.tm_hour + 9
+    if Hour >= 24 :
+        Hour = Hour - 24
 
     print("Investing.com 현재 환율 :",currency_rate.convert(1,'USD','KRW'))    # 환율
     print("김프 %:", Kimch_P )    # 환율
@@ -64,11 +67,12 @@ def print_message_m():
     print("Upbit 이득(₩)", Revenu)                      # KRW-XRP 조회
 
     if Kimch_P > KimPMax or Kimch_P < KimPMin :
+        post_message(myToken_m,"#coin_ararm","H:" + str(Hour) + str(" Min:") + str(now.tm_min)) 
         post_message(myToken_m,"#coin_ararm","김치프리미엄 :" + str(Kimch_P))
 
    #s = "%04d-%02d-%02d %02d:%02d:%02d" % (now.tm_year, now.tm_mon, now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec)
     #post_message(myToken_m,"#coin","H:" + str(now.tm_hour) + str("Min:") + str(now.tm_min))
-    post_message(myToken_m,"#coin","H:" + str(now.tm_hour) + str(" Min:") + str(now.tm_min))
+    post_message(myToken_m,"#coin","H:" + str(Hour) + str(" Min:") + str(now.tm_min))
     post_message(myToken_m,"#coin","김치프리미엄 :" + str(Kimch_P))
     post_message(myToken_m,"#coin","UpToBin:" + str(NoOfCont))
     post_message(myToken_m,"#coin","BiToUp("+str(NoOfContToSnd) +str("):") + str(Revenu))
