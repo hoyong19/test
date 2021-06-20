@@ -8,10 +8,9 @@ from currency_converter import CurrencyConverter
 
 
 currency_rate = CurrencyConverter('http://www.ecb.europa.eu/stats/eurofxref/eurofxref.zip')
-myToken_m = "xoxb-2195920738884-2189979238867-YpqCBJrfCEaQQ43jawLe1EiU"
-myToken_a = "xoxb-2195920738884-2175119279447-hhZ7qfBKjl2zot298eePv3IE"
+myToken_m = ""
 
-KimPMin = 3
+KimPMin = 3.5
 KimPMax = 5.5
 NoOfContToSnd = 851
 UpbitTransfFee = 1
@@ -19,6 +18,7 @@ UpbitFee = 0.0005
 BinanTransfFee = 0.25
 BinaFee_M = 0.0001
 BinaFee_T = 0.0005
+
 
 #Upbit 가격 XRP/won
 def get_current_price(ticker):
@@ -48,6 +48,8 @@ def print_message():
     NoOfXrpToSnd = (NoOfContToSnd * 10 / BinanXrp_d)*(1-BinaFee_T) - BinanTransfFee
     Revenu = NoOfXrpToSnd * UpbitXrp - 10000000
     Kimch_P = UpbitXrp/BinanXrp_k*100-100
+    now = time.localtime()
+
     print("Investing.com 현재 환율 :",currency_rate.convert(1,'USD','KRW'))    # 환율
     print("김프 %:", Kimch_P )    # 환율
     print("Upbit XRP :", UpbitXrp)                      # KRW-XRP 조회
@@ -62,8 +64,11 @@ def print_message():
     print("Upbit 이득(₩)", Revenu)                      # KRW-XRP 조회
 
     if Kimch_P > KimPMax or Kimch_P < KimPMin :
-        post_message(myToken_a,"#coin_ararm","김치프리미엄 :" + str(Kimch_P))
-  
+        post_message(myToken_m,"#coin_ararm","김치프리미엄 :" + str(Kimch_P))
+
+   #s = "%04d-%02d-%02d %02d:%02d:%02d" % (now.tm_year, now.tm_mon, now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec)
+    #post_message(myToken_m,"#coin","H:" + str(now.tm_hour) + str("Min:") + str(now.tm_min))
+    post_message(myToken_m,"#coin","H:" + str(now.tm_hour) + str(" Min:") + str(now.tm_min))
     post_message(myToken_m,"#coin","김치프리미엄 :" + str(Kimch_P))
     post_message(myToken_m,"#coin","UpToBin:" + str(NoOfCont))
     post_message(myToken_m,"#coin","BiToUp("+str(NoOfContToSnd) +str("):") + str(Revenu))
@@ -77,9 +82,12 @@ print_message()
 schedule.every(1).minutes.do(print_message)
 
 while True:
-
-    schedule.run_pending()
-    time.sleep(1)
+    try:
+        schedule.run_pending()
+        time.sleep(1)
+    except Exception as e:
+        print(e)
+        time.sleep(1)
 
 
 
