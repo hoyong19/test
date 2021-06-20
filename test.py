@@ -39,7 +39,7 @@ def post_message(token, channel, text):
     )
     print(response)
 
-def print_message():
+def print_message_m():
     UpbitXrp = get_current_price("KRW-XRP")
     BinanXrp_d = get_binance_xrp()
     BinanXrp_k = BinanXrp_d * currency_rate.convert(1,'USD','KRW')
@@ -73,13 +73,36 @@ def print_message():
     post_message(myToken_m,"#coin","UpToBin:" + str(NoOfCont))
     post_message(myToken_m,"#coin","BiToUp("+str(NoOfContToSnd) +str("):") + str(Revenu))
 
+def print_message_s():
+    UpbitXrp = get_current_price("KRW-XRP")
+    BinanXrp_d = get_binance_xrp()
+    BinanXrp_k = BinanXrp_d * currency_rate.convert(1,'USD','KRW')
+    NoOfXRP = (10000000/UpbitXrp)*(1-UpbitFee-BinaFee_M) - UpbitTransfFee
+    NoOfCont = NoOfXRP * BinanXrp_d / 10
+    NoOfXrpToSnd = (NoOfContToSnd * 10 / BinanXrp_d)*(1-BinaFee_T) - BinanTransfFee
+    Revenu = NoOfXrpToSnd * UpbitXrp - 10000000
+    Kimch_P = UpbitXrp/BinanXrp_k*100-100
+    now = time.localtime()
+
+    print("Investing.com cuurent Currency:",currency_rate.convert(1,'USD','KRW'))    # 환율
+    print("KimChi P %:", Kimch_P )    # 환율
+    print("Upbit XRP :", UpbitXrp)                      # KRW-XRP 조회
+    print("Binance XRP/$ :", BinanXrp_d, "\n")                  # KRW-XRP 조회
+
+    print("Upbit 10million ₩ XRP :", NoOfXRP)            # KRW-XRP 조회
+    print("contarct per 10million₩(10 USD$) :", NoOfCont,"\n")     # KRW-XRP 조회
+
+    print("Biance To Upbit based on", NoOfContToSnd, "Contract")                      # KRW-XRP 조회
+    print("Biance To Upbit XRP", NoOfXrpToSnd)                      # KRW-XRP 조회
+    print("Upbit 이득(₩)", Revenu)                      # KRW-XRP 조회
 
 
 #access = ""          # 본인 값으로 변경
 #secret = ""          # 본인 값으로 변경
 #upbit = pyupbit.Upbit(access, secret)
-print_message()
-schedule.every(1).minutes.do(print_message)
+
+schedule.every(1).minutes.do(print_message_m)
+schedule.every(5).seconds.do(print_message_s)
 
 while True:
     try:
