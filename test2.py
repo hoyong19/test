@@ -11,7 +11,7 @@ myToken_m = ""
 
 KimPMin = 3.5
 KimPMax = 5.5
-NoOfContToSnd = 840
+NoOfContToSnd = 850
 UpbitTransfFee = 1
 UpbitFee = 0.0005
 BinanTransfFee = 0.25
@@ -91,7 +91,7 @@ def print_message_m():
 
    #s = "%04d-%02d-%02d %02d:%02d:%02d" % (now.tm_year, now.tm_mon, now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec)
     #post_message(myToken_m,"#coin","H:" + str(now.tm_hour) + str("Min:") + str(now.tm_min))
-    post_message(myToken_m,"#coin","H:" + str(Hour) + str(" Min:") + str(now.tm_min))
+    post_message(myToken_m,"#coin","H:" + str(Hour) + str(" Min:") + str(now.tm_min) + str( "₩/$: ") + str(Curr_Currency))
     post_message(myToken_m,"#coin","김치프리미엄 :" + str(Kimch_P))
     post_message(myToken_m,"#coin","UpToBin:" + str(NoOfCont))
     post_message(myToken_m,"#coin","BiToUp("+str(NoOfContToSnd) +str("):") + str(Revenu))
