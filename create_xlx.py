@@ -2,20 +2,33 @@ import openpyxl
 import schedule
 import pyupbit
 import ccxt
-import time, datetime
-from currency_converter import CurrencyConverter
+from datetime import datetime
+from datetime import date
+import time
+import requests
+from bs4 import BeautifulSoup
 
-
-currency_rate = CurrencyConverter('http://www.ecb.europa.eu/stats/eurofxref/eurofxref.zip')
-server = 1 # 0: local / 1 : servers
 
 # 새로운 워크북 만들기
 wb = openpyxl.Workbook()
 # 현재 시트 선택
 sheet = wb.active
 # 헤더 추가하기
-sheet.append(["Month","Day","Hour","Min","Upbit(₩)", "Binance($)", "Currency", "Kimch P"])
+sheet.append(["time","Upbit(₩)", "Binance($)", "Binance(₩)", "Currency", "Kimch P"])
 
+def get_currency_exchange_rate(pair1, pair2):
+    headers = {
+        'User-Agent': 'Mozilla/5.0',
+        'Content-Type': 'text/html; charset=utf-8'
+    }
+
+    response = requests.get("https://kr.investing.com/currencies/{}-{}".format(pair1, pair2), headers=headers)
+    content = BeautifulSoup(response.content, 'html.parser')
+    containers = content.find('span', {'id': 'last_last'})
+    currnency = containers.text
+    currnency = currnency.replace(',', '')
+    currnency = float(currnency)
+    return currnency
 
 #Upbit 가격 XRP/won
 def get_current_price(ticker):
@@ -32,20 +45,24 @@ def get_binance_xrp():
 def makeTS_01():
     UpbitXrp = get_current_price("KRW-XRP") 
     BinanXrp_d = get_binance_xrp()
-    BinanXrp_k = BinanXrp_d * currency_rate.convert(1,'USD','KRW')
+    Current_Exchange_rate =get_currency_exchange_rate('usd', 'krw')
+    BinanXrp_k = BinanXrp_d * Current_Exchange_rate
     Kimch_P = UpbitXrp/BinanXrp_k*100-100
-    now = time.localtime()
+    ex_datetime = datetime.now()
 
-    if server == 1 :
-        Hour = now.tm_hour + 9
-        if Hour >= 24 :
-            Hour = Hour - 24
-            Day = now.tm_mday +1
+    tday = date.today()
+    tday_s = tday.strftime('%b-%d')
+    new_filename = 'xrp_' + tday_s + '.xlsx'
 
+    #print(now)
     #print(str(int(datetime.datetime.now().timestamp())),str(UpbitXrp), str(BinanXrp_d), str(currency_rate.convert(1,'USD','KRW')), str(Kimch_P))
-    sheet.append([str(now.tm_mon),str(Day),str(Hour),str(now.tm_min),str(UpbitXrp), str(BinanXrp_d), str(currency_rate.convert(1,'USD','KRW')), str(Kimch_P)]) 
-    wb.save('kimp.xlsx')
+    #sheet.append([str(now.tm_mon),str(now.tm_mday),str(now.tm_hour),str(now.tm_min),str(UpbitXrp), str(BinanXrp_d), str(BinanXrp_k), str(Current_Exchange_rate), str(Kimch_P)]) 
+    sheet.append([ex_datetime,UpbitXrp, BinanXrp_d, BinanXrp_k, Current_Exchange_rate, Kimch_P])
+    wb.save(new_filename)
+    wb.close()
 
+
+makeTS_01()
 schedule.every(1).minutes.do(makeTS_01)
 
 while True:

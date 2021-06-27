@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from currency_converter import CurrencyConverter
 
-myToken_m = ""
+myToken_m = "xoxb-2195920738884-2196572681652-sSAYp880KPzX8rchbhICq5fTest"
 
 KimPMin = 3.5
 KimPMax = 5.5
@@ -30,9 +30,7 @@ def get_currency_exchange_rate(pair1, pair2):
     containers = content.find('span', {'id': 'last_last'})
     currnency = containers.text
     currnency = currnency.replace(',', '')
-    #print(currnency)
     currnency = float(currnency)
-    #print(datetime.now(), containers.text)
     return currnency
 
 
@@ -127,8 +125,9 @@ def print_message_s():
 #secret = ""          # 본인 값으로 변경
 #upbit = pyupbit.Upbit(access, secret)
 print_message_m()
-schedule.every(1).minutes.do(print_message_m)
-schedule.every(5).seconds.do(print_message_s)
+#schedule.every(1).minutes.do(print_message_m)
+schedule.every(30).seconds.do(print_message_m
+)
 
 
 while True:
